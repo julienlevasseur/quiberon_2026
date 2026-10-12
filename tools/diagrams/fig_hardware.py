@@ -148,7 +148,7 @@ def arduino_broches():
     p.append(sv)
     tags = [
         ("D6", 720, 80, "D6 → données des 2 guirlandes (via 330 Ω)", "green"),
-        ("D5", 720, 105, "D5 → RX du lecteur MP3 (via 1 kΩ)", "blue"),
+        ("D5", 720, 105, "D5 → RX du lecteur MP3 (via pont 1 kΩ / 2,2 kΩ)", "blue"),
         ("D4", 720, 130, "D4 : réservé (TX du MP3, non utilisé)", "grey"),
         ("D3", 720, 155, "D3 ← BUSY du lecteur MP3", "orange"),
         ("D2", 720, 180, "D2 ← bouton de départ (autre borne au GND)", "yellow"),
@@ -193,10 +193,15 @@ def lecteur_mp3():
     xg, yg = ap["GND_P"]
     p.append(wire([(x5, y5), (x5, 500), (470, 500), (470, dp["VCC"][1]), dp["VCC"]], "red", 3))
     p.append(wire([(xg, yg), (xg, 520), (490, 520), (490, dp["GND"][1]), dp["GND"]], "black", 3))
-    # RX through 1 kOhm
+    # RX through a 1 kOhm / 2.2 kOhm divider (5 V -> 3.4 V)
     x, y = ap["D5"]
     p.append(wire([(x, y), (x, 120), (420, 120), (420, dp["RX"][1]), dp["RX"]], "blue", 3))
     p.append(resistor(420, 175, (1, 0, 2), vertical=True, length=50, label="1 kΩ"))
+    p.append(wire([(440, dp["RX"][1]), (440, 520)], "black", 3))
+    p.append(resistor(440, 300, (2, 2, 2), vertical=True, length=50))
+    p.append(halo(430, 304, "2,2 kΩ", 12, "end", "bold"))
+    p.append(sdot(440, dp["RX"][1], 4))
+    p.append(sdot(440, 520, 4))
     # BUSY back to D3
     x, y = ap["D3"]
     bx, by = dp["BUSY"]
@@ -217,9 +222,9 @@ def lecteur_mp3():
     p.append(callout(840, 250, 320, ["BUSY = 0 V pendant la lecture,",
                                      "5 V au repos : l'Arduino sait ainsi",
                                      "quand une piste se termine."], "Pourquoi BUSY ?"))
-    p.append(callout(590, 410, 270, ["Le module est en logique 3,3 V :",
-                                     "la résistance limite le courant",
-                                     "quand l'Arduino envoie du 5 V."], "Pourquoi 1 kΩ ?", size=11))
+    p.append(callout(590, 400, 270, ["Le module est en logique 3,3 V :",
+                                     "le pont 1 kΩ / 2,2 kΩ ramène le 5 V",
+                                     "de D5 à 5 × 2,2 / 3,2 ≈ 3,4 V sur RX."], "Pourquoi deux résistances ?", size=11))
     p.append(dfplayer_labels(dp))
     return doc(W, H, p)
 
@@ -519,6 +524,12 @@ def banc_essai():
     p.append(resistor((hx(30) + hx(34)) / 2, hole(30, "c")[1], (3, 3, 1), length=34))
     p.append(halo((hx(22) + hx(26)) / 2, hole(22, "e")[1] + 4, "1 kΩ", 11, "middle", "bold"))
     p.append(halo((hx(30) + hx(34)) / 2, hole(30, "e")[1] + 4, "330 Ω", 11, "middle", "bold"))
+    # 2.2 kOhm from the RX column to GND (divider with the 1 kOhm): jumper over the gap, cols 26-30 in row h
+    p.append(wire([hole(26, "e"), hole(26, "g")], "blue", 2))
+    p.append(line(hx(26), hole(26, "h")[1], hx(30), hole(30, "h")[1], "#9aa0a6", 2.5))
+    p.append(resistor((hx(26) + hx(30)) / 2, hole(26, "h")[1], (2, 2, 2), length=34))
+    p.append(wire([hole(30, "j"), (hx(30), hole(30, "-b")[1])], "black", 2.5))
+    p.append(halo((hx(26) + hx(30)) / 2, hole(26, "j")[1] + 6, "2,2 kΩ", 11, "middle", "bold"))
 
     # Arduino digital pins to the breadboard
     for pin, level, col, colour in (("D6", 280, 30, "green"), ("D5", 295, 22, "blue"), ("D2", 310, 14, "yellow")):

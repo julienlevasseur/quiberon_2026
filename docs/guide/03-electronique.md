@@ -31,7 +31,8 @@ broche, activée par le programme (`INPUT_PULLUP`).
 
 **Le pont diviseur.** Deux résistances R1 et R2 en série entre une tension V
 et GND : au point milieu, on trouve V × R2 / (R1 + R2). C'est la façon la plus
-simple de réduire une tension trop grande.
+simple de réduire une tension trop grande. Exemple dans ce projet : le fil
+RX du lecteur MP3 ([section 3](#3-le-lecteur-mp3)).
 
 ## 1. L'alimentation
 
@@ -92,11 +93,25 @@ blanc = GND, vert = données (DI), bleu = données de secours (BI).
 |---|---|---|
 | VCC | 5V de l'Arduino | alimentation du module |
 | GND | GND | masse commune |
-| RX | D5 de l'Arduino **via 1 kΩ** | les commandes arrivent ici. Le module travaille en 3,3 V : la résistance limite le courant quand l'Arduino envoie 5 V |
+| RX | D5 de l'Arduino **via 1 kΩ**, et **2,2 kΩ vers GND** | les commandes arrivent ici. Le module travaille en 3,3 V : ce pont diviseur ramène le 5 V de l'Arduino à ≈ 3,4 V (voir ci-dessous) |
 | TX | rien | le programme n'écoute pas les réponses du module (voir [chapitre 4](04-logiciel.md#pourquoi-le-lecteur-mp3-est-piloté-sans-écouter-ses-réponses)). La broche D4 lui reste réservée |
 | BUSY | D3 de l'Arduino | 0 V pendant la lecture, 5 V au repos |
 | DAC_L, DAC_R | entrée ligne de l'ampli | sortie audio de niveau « ligne », avec le GND du module comme référence |
 | SPK_1, SPK_2 | petit haut-parleur (essais seulement) | ampli intégré de 3 W ; **ne jamais relier SPK_1 ou SPK_2 au GND** |
+
+**Pourquoi deux résistances sur RX ?** Le circuit du module fonctionne en
+3,3 V ; ses entrées acceptent au plus ≈ 3,6 V. Avec une seule résistance de
+1 kΩ en série, ce sont les diodes de protection internes du module qui
+« écrêtent » le 5 V de l'Arduino : on mesure alors ≈ 3,8 V sur RX. Cela
+fonctionne souvent, mais en dehors des limites du composant. La résistance de
+2,2 kΩ entre RX et GND forme avec la 1 kΩ un pont diviseur :
+5 V × 2,2 / (1 + 2,2) ≈ 3,4 V. Au repos, une ligne série reste à 1 (5 V) :
+le pont consomme alors 5 V / 3,2 kΩ ≈ 1,6 mA, sans problème pour la broche
+D5.
+
+**Vérification** : Arduino et lecteur alimentés, aucun son en cours, le
+multimètre entre RX et GND doit indiquer **≈ 3,4 V** (entre 3,2 et 3,5 V).
+3,8 V ou plus : la 2,2 kΩ manque ou est mal branchée.
 
 Le programme active la résistance de rappel de l'Arduino sur D3. Si le fil
 BUSY est débranché, D3 lit donc 5 V, c'est-à-dire « rien ne joue », et le jeu fonctionne quand même grâce à des
@@ -180,6 +195,7 @@ pour la partie programme.
 | bouton, borne 2 | GND | fil simple | |
 | Arduino D3 | lecteur MP3 BUSY | fil simple | |
 | Arduino D5 | lecteur MP3 RX | **résistance 1 kΩ** en série | |
+| lecteur MP3 RX | GND | **résistance 2,2 kΩ** (pont diviseur avec la 1 kΩ) | |
 | Arduino 5V | lecteur MP3 VCC | fil simple | |
 | Arduino GND | lecteur MP3 GND | fil simple | |
 | lecteur MP3 DAC_L, DAC_R, GND | entrée ligne de l'ampli | câble audio | |

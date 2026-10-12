@@ -13,7 +13,7 @@ that make the installation reliable.
 |---|---|---|
 | D2 | Start push button | other side to GND; internal pull-up, so no resistor needed |
 | D3 | DFPlayer `BUSY` | LOW while a track is playing |
-| D5 | DFPlayer `RX` | through a **1 kΩ** series resistor (the DFPlayer runs at 3.3 V logic) |
+| D5 | DFPlayer `RX` | through a **1 kΩ** series resistor, plus **2.2 kΩ** from `RX` to GND: the divider brings 5 V down to ≈ 3.4 V (the DFPlayer runs at 3.3 V logic) |
 | D4 | DFPlayer `TX` | not used (the firmware only sends), may stay unconnected |
 | D6 | LED data, both garlands | see below |
 | A1 | Generator, through the signal adapter | must stay within **0–5 V** |

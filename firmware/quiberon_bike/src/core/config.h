@@ -10,7 +10,7 @@ namespace cfg {
 // ---------------------------------------------------------------- pins (Uno)
 const uint8_t PIN_START_BUTTON = 2;   // INPUT_PULLUP, pressed = LOW
 const uint8_t PIN_MP3_BUSY     = 3;   // DFPlayer BUSY, LOW while a track plays
-const uint8_t PIN_MP3_TX       = 5;   // TX-only serial (hal/tx_serial) -> 1 kOhm -> DFPlayer RX
+const uint8_t PIN_MP3_TX       = 5;   // TX-only serial (hal/tx_serial) -> 1 kOhm -> DFPlayer RX (+ 2.2 kOhm RX -> GND: 5 V -> 3.4 V)
 const uint8_t PIN_LEDS         = 6;   // both garlands wired in parallel
 const uint8_t PIN_GENERATOR    = 1;   // A1, through the signal adapter (0-5 V)
 

@@ -13,7 +13,7 @@ qui rendent l'installation fiable.
 |---|---|---|
 | D2 | Bouton poussoir de départ | autre côté à GND ; pull-up interne, donc pas de résistance |
 | D3 | DFPlayer `BUSY` | à LOW pendant la lecture d'une piste |
-| D5 | DFPlayer `RX` | via une résistance série de **1 kΩ** (le DFPlayer est en logique 3,3 V) |
+| D5 | DFPlayer `RX` | via une résistance série de **1 kΩ**, plus **2,2 kΩ** entre `RX` et GND : le pont ramène le 5 V à ≈ 3,4 V (le DFPlayer est en logique 3,3 V) |
 | D4 | DFPlayer `TX` | non utilisée (le firmware ne fait qu'envoyer), peut rester non connectée |
 | D6 | Données LED, les deux guirlandes | voir ci-dessous |
 | A1 | Génératrice, via l'adaptateur de signal | doit rester entre **0 et 5 V** |

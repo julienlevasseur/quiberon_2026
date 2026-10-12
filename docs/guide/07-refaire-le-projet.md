@@ -69,10 +69,12 @@ potentiomètre en douceur (≈ 1 s pour se stabiliser).
 
 1. Préparer la carte SD ([carte SD](../sd-card.fr.md)) et l'insérer dans le
    lecteur MP3.
-2. Câbler le lecteur : VCC → 5V, GND → GND, RX ← D5 **via 1 kΩ**, BUSY → D3,
-   petit haut-parleur sur SPK_1 / SPK_2 ([dessin](03-electronique.md#3-le-lecteur-mp3)).
-3. Redémarrer l'Arduino (bouton reset), attendre 3 s.
-4. Taper `play 1`, puis `status` pendant la lecture et après.
+2. Câbler le lecteur : VCC → 5V, GND → GND, RX ← D5 **via 1 kΩ** et RX → GND
+   **via 2,2 kΩ**, BUSY → D3, petit haut-parleur sur SPK_1 / SPK_2
+   ([dessin](03-electronique.md#3-le-lecteur-mp3)).
+3. Mesurer au multimètre entre RX et GND : ≈ 3,4 V (pas 5 V, pas 3,8 V).
+4. Redémarrer l'Arduino (bouton reset), attendre 3 s.
+5. Taper `play 1`, puis `status` pendant la lecture et après.
 
 **Validation** : on entend le compte à rebours ; `status` donne `busy 1` pendant
 la lecture et `busy 0` après ; `busyok 1`. Une partie lancée par le bouton :

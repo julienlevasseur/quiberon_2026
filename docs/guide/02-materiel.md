@@ -18,7 +18,8 @@
 | 4 | **Fusibles** (type lame automobile) + porte-fusibles | un par guirlande, un pour l'ampli, un pour l'Arduino | protègent contre les courts-circuits |
 | 1 | **Diode anti-retour** | selon le courant de la génératrice | laisse la génératrice charger la batterie, pas l'inverse |
 | 2 | Résistance **330 Ω** | 1/4 W | une par guirlande, sur la ligne de données |
-| 1 | Résistance **1 kΩ** | 1/4 W | entre l'Arduino et le lecteur MP3 |
+| 1 | Résistance **1 kΩ** | 1/4 W | entre D5 de l'Arduino et RX du lecteur MP3 |
+| 1 | Résistance **2,2 kΩ** | 1/4 W | entre RX du lecteur MP3 et GND (pont diviseur 5 V → 3,4 V avec la 1 kΩ) |
 | 1 | **Afficheur 2 chiffres** | pas encore choisi, voir le [chapitre 5](05-interfaces.md#ajouter-le-vrai-afficheur) | les calories |
 | — | Câbles | 1,5 mm² pour le 12 V des guirlandes ; fil fin pour les signaux | |
 
