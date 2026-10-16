@@ -46,12 +46,27 @@ The serial console commands are listed in [the console header](../firmware/quibe
 
 | # | Do | Expect | ✓ |
 |---|---|---|---|
-| 3.1 | `play 1` | Countdown "Attention au départ 5-4-3-2-1-0" | |
+| 3.1 | `play 1` | Countdown "Attention au départ 5-4-3-2-1-0". **If nothing is heard, stop here and go to [3.7](#37-if-play-stays-silent)**: the rest of section 3 means nothing without sound | |
 | 3.2 | `status` while it plays | `busy 1 busyok 1` | |
-| 3.3 | `status` after it ended | `busy 0`. **If busy is 1 when silent and 0 when playing, the BUSY polarity is reversed: report it** (one line to change) | |
+| 3.3 | `status` after it ended | `busy 0`. **Only if the track was really heard in 3.1**: if busy is 1 when silent and 0 when playing, the BUSY polarity is reversed, report it (one line to change). With no sound at all, `busy 0` is normal (the module is idle) and `busy 1` would mean BUSY is not wired: do not change the polarity | |
 | 3.4 | `play 2`, `play 3`, `play 4` | Waka Waka, then applause, then the winner music (if the file exists) | |
 | 3.5 | `phase idle` | Sound stops | |
 | 3.6 | Listen to the level at the visitors' distance | Volume comfortable (set in `config.h`, `VOLUME`, 0–30) | |
+
+### 3.7 If `play` stays silent
+
+BUSY tells whether the module plays: LOW (`busy 1`) while playing, HIGH
+(`busy 0`) when idle. Silent with `busy 0` means the module never started.
+Find out which side is at fault, in this order:
+
+| # | Do | Expect | ✓ |
+|---|---|---|---|
+| 3.7.1 | Module powered, Arduino left as is: touch the DFPlayer pin `IO2` (pin 11) to GND for a short moment | The module plays a track on its own (no serial link involved), BUSY (pin 16) goes LOW. **If yes: the module and the card are fine, go to 3.7.3. If no: 3.7.2** | |
+| 3.7.2 | Check the card and power: FAT32, 32 GB or less, folder `mp3` at the root with `0001_….mp3`… ([SD card](sd-card.md)); 5 V on VCC (pin 1); module GND joined to Arduino GND; speaker on `SPK_1` / `SPK_2`. Then try another card, then another module | 3.7.1 now plays | |
+| 3.7.3 | Check the link: D5 → 1 kΩ → DFPlayer **RX (pin 2)**, not TX (pin 3); 2.2 kΩ from RX to GND; multimeter RX–GND at rest | ≈ 3.4 V on RX; then `play 1` plays | |
+| 3.7.4 | If an oscilloscope or logic analyser is at hand: probe RX during `play 1` | One 10-byte frame at 9600 baud: `7E FF 06 12 00 00 01 FE E8 EF` | |
+
+Report which step failed (and what was seen at 3.7.4, if done).
 
 ## 4. Start button
 
@@ -119,7 +134,8 @@ Use a stopwatch.
 ```
 free RAM at boot (1.1):            ____
 supply current, all white (2.3):   ____ A
-BUSY polarity correct (3.3):       yes / no
+BUSY polarity correct (3.3):       yes / no / not checked (no sound)
+silent play, failing step (3.7):   ____
 volume OK (3.6):                   yes / no, preferred: ____
 adc at rest / normal / sprint:     ____ / ____ / ____
 voltage A1 at sprint:              ____ V

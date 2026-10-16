@@ -15,7 +15,7 @@
 | La première LED scintille | BI de la première LED non relié | relier BI au GND côté entrée |
 | La fin de la guirlande est jaune / rouge en `leds white` | chute de tension sur 5 m | injecter le 12 V aux deux bouts, fils plus gros |
 | Des LED clignotent au hasard, surtout loin de l'Arduino | fil de données trop long, parasites | raccourcir, vérifier la résistance de 330 Ω, ajouter un tampon 74HCT245 |
-| Pas de son | carte SD mal préparée ; fil RX ; volume | `play 1` ; vérifier le dossier `/mp3` et les noms `0001_…` ([carte SD](../sd-card.fr.md)) ; vérifier les résistances de RX (1 kΩ en série, 2,2 kΩ vers GND : ≈ 3,4 V sur RX au repos) |
+| Pas de son | carte SD mal préparée ; fil RX ; volume | `play 1` puis `status` : `busy 0` = le module n'a pas démarré (ne pas toucher à la polarité de BUSY). Relier un instant `IO2` (broche 11) du lecteur à GND : s'il joue, la carte et le module vont bien, la panne est sur la liaison D5 → RX ; sinon chercher côté carte / alimentation ([banc d'essai, 3.7](../bench-test.fr.md#37-si-play-reste-muet)). Vérifier le dossier `/mp3` et les noms `0001_…` ([carte SD](../sd-card.fr.md)) ; vérifier les résistances de RX (1 kΩ en série, 2,2 kΩ vers GND : ≈ 3,4 V sur RX au repos) |
 | Le son met plusieurs secondes à démarrer | fichiers MP3 avec de grosses pochettes | retirer les images des fichiers (tags ID3) |
 | Le compte à rebours dure toujours 10 s | BUSY ne fonctionne pas | `status` : `busyok 0` ? vérifier le fil BUSY → D3 ; polarité |
 | La musique de course s'arrête | le clone ignore la commande de répétition et BUSY ne marche pas | réparer BUSY : le programme relance alors la musique tout seul |

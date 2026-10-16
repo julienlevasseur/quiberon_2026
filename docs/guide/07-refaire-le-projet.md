@@ -82,7 +82,10 @@ la course démarre pile à la fin du « 0 », la musique tourne en boucle.
 
 > Si `busy` vaut 1 en silence et 0 pendant la lecture, la polarité de BUSY de
 > votre module est inversée : il faut le signaler (une ligne à changer dans
-> `DFPlayer::playingFromBusyPin`).
+> `DFPlayer::playingFromBusyPin`). Attention : ce test n'a de sens que si on
+> **entend** le morceau. Sans aucun son, `busy 0` est normal (le module est au
+> repos, il n'a pas démarré) : chercher la panne du son (voir
+> [Dépannage](08-depannage.md)), surtout ne pas inverser la polarité.
 
 ## Étape 5 : un bout de ruban LED
 

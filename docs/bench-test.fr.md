@@ -49,12 +49,27 @@ Les commandes de la console série sont listées dans [l'en-tête de la console]
 
 | # | Faire | Attendu | ✓ |
 |---|---|---|---|
-| 3.1 | `play 1` | Compte à rebours « Attention au départ 5-4-3-2-1-0 » | |
+| 3.1 | `play 1` | Compte à rebours « Attention au départ 5-4-3-2-1-0 ». **Si on n'entend rien, s'arrêter là et passer au [3.7](#37-si-play-reste-muet)** : la suite de la section 3 n'a pas de sens sans son | |
 | 3.2 | `status` pendant la lecture | `busy 1 busyok 1` | |
-| 3.3 | `status` une fois la lecture finie | `busy 0`. **Si busy vaut 1 en silence et 0 pendant la lecture, la polarité de BUSY est inversée : le signaler** (une ligne à changer) | |
+| 3.3 | `status` une fois la lecture finie | `busy 0`. **Seulement si le morceau a vraiment été entendu en 3.1** : si busy vaut 1 en silence et 0 pendant la lecture, la polarité de BUSY est inversée, le signaler (une ligne à changer). Sans aucun son, `busy 0` est normal (le module est au repos) et `busy 1` voudrait dire que BUSY n'est pas câblé : ne pas changer la polarité | |
 | 3.4 | `play 2`, `play 3`, `play 4` | Waka Waka, puis les applaudissements, puis la musique du vainqueur (si le fichier existe) | |
 | 3.5 | `phase idle` | Le son s'arrête | |
 | 3.6 | Écouter le niveau à la distance des visiteurs | Volume confortable (réglé dans `config.h`, `VOLUME`, 0 à 30) | |
+
+### 3.7 Si `play` reste muet
+
+BUSY indique si le module joue : BAS (`busy 1`) pendant la lecture, HAUT
+(`busy 0`) au repos. Muet avec `busy 0` veut dire que le module n'a jamais
+démarré. Trouver le côté en défaut, dans cet ordre :
+
+| # | Faire | Attendu | ✓ |
+|---|---|---|---|
+| 3.7.1 | Module alimenté, Arduino laissé tel quel : toucher un court instant la broche `IO2` (broche 11) du DFPlayer avec GND | Le module joue un morceau tout seul (sans la liaison série), BUSY (broche 16) passe à BAS. **Si oui : le module et la carte vont bien, passer au 3.7.3. Sinon : 3.7.2** | |
+| 3.7.2 | Vérifier la carte et l'alimentation : FAT32, 32 Go au plus, dossier `mp3` à la racine avec `0001_….mp3`… ([carte SD](sd-card.fr.md)) ; 5 V sur VCC (broche 1) ; GND du module relié au GND de l'Arduino ; haut-parleur sur `SPK_1` / `SPK_2`. Puis essayer une autre carte, puis un autre module | Le 3.7.1 joue maintenant | |
+| 3.7.3 | Vérifier la liaison : D5 → 1 kΩ → **RX (broche 2)** du DFPlayer, pas TX (broche 3) ; 2,2 kΩ de RX vers GND ; multimètre RX–GND au repos | ≈ 3,4 V sur RX ; ensuite `play 1` joue | |
+| 3.7.4 | Avec un oscilloscope ou un analyseur logique : sonder RX pendant `play 1` | Une trame de 10 octets à 9600 bauds : `7E FF 06 12 00 00 01 FE E8 EF` | |
+
+Indiquer l'étape qui a échoué (et ce qui a été vu au 3.7.4, si fait).
 
 ## 4. Bouton de départ
 
@@ -123,7 +138,8 @@ Utiliser un chronomètre.
 ```
 RAM libre au démarrage (1.1) :                ____
 courant de l'alim, tout en blanc (2.3) :      ____ A
-polarité BUSY correcte (3.3) :                oui / non
+polarité BUSY correcte (3.3) :                oui / non / non vérifiée (pas de son)
+lecture muette, étape en échec (3.7) :        ____
 volume OK (3.6) :                             oui / non, préféré : ____
 adc au repos / normal / sprint :              ____ / ____ / ____
 tension A1 au sprint :                        ____ V
